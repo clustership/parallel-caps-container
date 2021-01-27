@@ -11,7 +11,20 @@ import (
   "bufio"
   "math/rand"
   "syscall"
+
+  "encoding/json"
+
+  "net/http"
+  "github.com/gorilla/mux"
+  "github.com/rs/cors"
 )
+
+func getEnv(key, fallback string) string {
+    if value, ok := os.LookupEnv(key); ok {
+        return value
+    }
+    return fallback
+}
 
 func main() {
   rand.Seed(time.Now().UnixNano())
@@ -24,11 +37,13 @@ func main() {
 		// fmt.Println(strings.Join(eachline[4:len(eachline)], "|"))
 		fmt.Println(strings.Join(eachline, "|"))
 	}
-  c := make(chan []string)
 
-  var wg sync.WaitGroup
-  wg.Add(parallelization)
-  for ii := 0; ii < parallelization; ii++ {
+  go func() {
+    c := make(chan []string)
+
+    var wg sync.WaitGroup
+    wg.Add(parallelization)
+    for ii := 0; ii < parallelization; ii++ {
       go func(c chan []string) {
           for {
               v, more := <-c
@@ -44,15 +59,41 @@ func main() {
               fmt.Println(ret)
           }
       }(c)
-  }
-  for {
-    for _, a := range scmd {
-      c <- a
-   }
- }
-  close(c)
-  wg.Wait()
-  fmt.Println("End")
+    }
+    for {
+      for _, a := range scmd {
+        c <- a
+      }
+    }
+    close(c)
+    wg.Wait()
+    fmt.Println("End")
+  }()
+  //
+  // Mux router part
+  //
+  router := mux.NewRouter()
+
+  router.HandleFunc("/", showResponse).Methods("GET")
+
+  handler := cors.Default().Handler(router)
+
+  port := fmt.Sprintf(":%s", getEnv("PORT", "8080"))
+
+  log.Printf("Listening on %s...", port)
+  log.Fatal(http.ListenAndServe(port, handler))
+}
+
+type Message struct {
+	Text string
+}
+
+func showResponse(w http.ResponseWriter, r *http.Request) {
+  m := Message{"Hello World"}
+
+  w.Header().Set("Content-Type", "application/json")
+
+  json.NewEncoder(w).Encode(&m)
 }
 
 func do(s []string) (string, error) {
