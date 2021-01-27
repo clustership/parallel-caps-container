@@ -6,7 +6,20 @@ It is mainly used to test OpenShift capabilities overrides in securityContext bu
 
 ## Usage
 
-TBD
+
+### build the container image
+
+```bash
+cd container
+make build
+make push
+```
+
+### deploy the container image
+
+```bash
+cd helm
+```
 
 ## Resources
 
