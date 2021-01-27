@@ -1,0 +1,4 @@
+nc www.google.com 443
+nice -20 sleep 100
+nice -10 cat /etc/passwd
+nice -5 sudo ls /etc

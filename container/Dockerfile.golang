@@ -1,0 +1,27 @@
+FROM registry.redhat.io/ubi8/go-toolset as builder
+
+RUN mkdir -p /opt/app-root/src
+WORKDIR /opt/app-root/src
+
+COPY go.* parallel.go .
+
+RUN go build -o parallel
+
+FROM registry.redhat.io/ubi8
+
+USER root
+RUN dnf -y install nmap-ncat \
+                   procps-ng \
+                   iputils \
+                   iproute \
+                   sudo \
+    && dnf clean all
+
+RUN mkdir -p /app
+WORKDIR /app
+
+COPY --from=builder /opt/app-root/src/parallel .
+COPY test.txt .
+USER 1001
+
+CMD [ "./parallel" ]
