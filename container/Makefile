@@ -9,8 +9,9 @@ DOCKERFILE = Dockerfile.golang
 
 .PHONY: build push
 
-build-nocache: Dockerfile
+build-nocache:
 	$(DOCKER) build --rm --no-cache -t $(NS)/$(IMAGE_NAME):$(VERSION) -f $(DOCKERFILE) .
+
 build:
 	$(DOCKER) build -t $(NS)/$(IMAGE_NAME):$(VERSION) -f $(DOCKERFILE) .
 	$(DOCKER) tag $(NS)/$(IMAGE_NAME):$(VERSION) $(REPOSITORY)/$(NS)/$(IMAGE_NAME):$(VERSION)
