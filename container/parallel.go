@@ -132,7 +132,8 @@ func do(s []string) (string, error) {
 
   // log.Printf("Running command and waiting for it to finish...")
 
-  n := rand.Intn(15)
+  // n := rand.Intn(15)
+  n := 1
   time.Sleep(time.Duration(n)*time.Second)
 
   fmt.Printf("Sleeped %d seconds...\n", n)

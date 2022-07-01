@@ -10,12 +10,16 @@ RUN go build -o parallel
 FROM registry.redhat.io/ubi8
 
 USER root
-RUN dnf -y install nmap-ncat \
+RUN dnf -y update && \
+    dnf -y install nmap-ncat \
                    procps-ng \
                    iputils \
                    iproute \
                    sudo \
     && dnf clean all
+
+RUN rpm -e subscription-manager grubby python3-subscription-manager-rhsm grub2-tools
+RUN rpm -e $(rpm -qa *rpm*) $(rpm -qa *dnf*) $(rpm -qa *libsolv*) $(rpm -qa *hawkey*) $(rpm -qa yum*) libmodulemd
 
 RUN mkdir -p /app
 WORKDIR /app

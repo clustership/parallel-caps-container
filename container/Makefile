@@ -1,5 +1,5 @@
 NS ?= xymox
-VERSION ?= 0.1.1
+VERSION ?= 0.1.3
 REPOSITORY ?= quay.io
 
 IMAGE_NAME ?= devsecops-parallel
@@ -31,7 +31,7 @@ tag-latest: tag
 	$(DOCKER) tag $(NS)/$(IMAGE_NAME):$(VERSION) $(REPOSITORY)/$(NS)/$(IMAGE_NAME):latest
   
 push-latest: tag-latest
-  make push -e VERSION=latest
+	make push -e VERSION=latest
 
 release: push-latest push tag build
 
